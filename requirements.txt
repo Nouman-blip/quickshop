@@ -1,0 +1,8 @@
+redis
+celery
+fastapi
+unicorn
+pydantic
+sqlalchemy
+databases
+python-multipart  # if you plan to support file uploads
