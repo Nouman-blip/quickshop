@@ -12,13 +12,22 @@ celery_app = Celery(
 # Update Celery configuration settings
 celery_app.conf.update(
     task_routes={
-        # Routes the order processing task to the "orders" queue
         "app.tasks.process_order_task": {"queue": "orders"},
     },
     task_serializer="json",
     result_serializer="json",
     accept_content=["json"],
     timezone="UTC",
+    # Add beat schedule if needed
+    beat_schedule={
+        'generate-daily-reports': {
+            'task': 'app.tasks.generate_periodic_reports',
+            'schedule': crontab(hour=0, minute=0),  # Run daily at midnight
+        },
+    }
+    task_acks_late=True,  # Tasks are acknowledged after completion
+    task_reject_on_worker_lost=True,  # Reject tasks if worker disconnects
+    task_time_limit=3600,  # Task timeout in seconds
 )
 
 # This allows the celery app to be run as a standalone script if needed.
